@@ -17,7 +17,6 @@ tags="env=$env project=$project";                   echo $tags
 # ---
 vnet_n="vnet-$project-$env-$l";                     echo $vnet_n
 
-
 # ---
 # Private DNS Zone
 # ---
@@ -27,6 +26,7 @@ dns_link="dnslink-$project";                        echo $dns_link
 ```
 
 ```bash
+
 # If required create a Resource Group
 az group create \
 --name $project_rg \
