@@ -6,23 +6,40 @@
 # ---
 # Main Vars
 # ---
-project="security";                                 echo $project
-env="prod";                                         echo $env
-project_rg="rg-$project-$env";                      echo $project_rg
+project="dns";                                      echo $project
+env="sb";                                           echo $env
 l="eastus";                                         echo $l
+project_rg="rg-$project-$env-$l";                   echo $project_rg
 tags="env=$env project=$project";                   echo $tags
 
 # ---
 # NETWORK TOPOLOGY
 # ---
-vnet_n="vnet-security-$env";                        echo $vnet_n
+vnet_n="vnet-$project-$env-$l";                     echo $vnet_n
 
 # ---
 # Private DNS Zone
 # ---
-pdnsz_n="privatelink.azurecr.io"                    echo $pdnsz_n
-pdnsz_vnet_n="vnet-name"                            echo $pdnsz_vnet_n
+pdnsz_n="privatelink.azurewebsites.net";            echo $pdnsz_n
+pdnsz_vnet_n="vnet-name";                           echo $pdnsz_vnet_n
 dns_link="dnslink-$project";                        echo $dns_link
+```
+
+```bash
+
+# If required create a Resource Group
+az group create \
+--name $project_rg \
+--location $l \
+--tags $tags
+
+# If required create a sample Virtual Network
+az network vnet create \
+--name $vnet_n \
+--resource-group $project_rg \
+--address-prefixes '192.168.0.0/25' \
+--location $l \
+--tags $tags
 ```
 
 ```bash
@@ -43,8 +60,15 @@ az network private-dns link vnet create \
 
 # Add as many records as required:
 az network private-dns record-set a add-record \
---record-set-name "192.168.0.1" \
+--record-set-name "app-safe-svc-n-dev-eastus2" \
 --zone-name $pdnsz_n \
 --resource-group $project_rg \
---ipv4-address $REGISTRY_PRIVATE_IP
+--ipv4-address "192.168.0.1"
+
+# Add as many records as required:
+az network private-dns record-set a add-record \
+--record-set-name "app-safe-svc-n-dev-eastus2.scm" \
+--zone-name $pdnsz_n \
+--resource-group $project_rg \
+--ipv4-address "192.168.0.1"
 ```
