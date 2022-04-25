@@ -17,6 +17,7 @@ tags="env=$env project=$project";                   echo $tags
 # ---
 vnet_n="vnet-$project-$env-$l";                     echo $vnet_n
 
+
 # ---
 # Private DNS Zone
 # ---
@@ -29,6 +30,14 @@ dns_link="dnslink-$project";                        echo $dns_link
 # If required create a Resource Group
 az group create \
 --name $project_rg \
+--location $l \
+--tags $tags
+
+# If required create a sample Virtual Network
+az network vnet create \
+--name $vnet_n \
+--resource-group $project_rg \
+--address-prefixes '192.168.0.0/25' \
 --location $l \
 --tags $tags
 ```
@@ -51,8 +60,15 @@ az network private-dns link vnet create \
 
 # Add as many records as required:
 az network private-dns record-set a add-record \
---record-set-name "192.168.0.1" \
+--record-set-name "app-safe-svc-n-dev-eastus2" \
 --zone-name $pdnsz_n \
 --resource-group $project_rg \
---ipv4-address $REGISTRY_PRIVATE_IP
+--ipv4-address "192.168.0.1"
+
+# Add as many records as required:
+az network private-dns record-set a add-record \
+--record-set-name "app-safe-svc-n-dev-eastus2.scm" \
+--zone-name $pdnsz_n \
+--resource-group $project_rg \
+--ipv4-address "192.168.0.1"
 ```
